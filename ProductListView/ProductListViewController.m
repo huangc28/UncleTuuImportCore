@@ -9,7 +9,6 @@
 @end
 
 @implementation ProductListViewController
-@synthesize products;
 
 - (void) viewDidLoad {
 	[super viewDidLoad];
@@ -130,7 +129,7 @@
 			if (httpResponse.statusCode == 200) {
 				// @TODO: handle the case where no inventory in response.
 				// Normalize
-				NSMutableArray<Product *> *prods = [[NSMutableArray alloc] init];
+				NSMutableArray<ProductModel *> *prods = [[NSMutableArray alloc] init];
 				NSArray *inventory = responseDictionary[@"inventory"];
 
 				for (NSDictionary *prod in inventory) {
@@ -141,8 +140,8 @@
 					NSNumber *price = (NSNumber *)prod[@"price"];
 					NSNumber *quantity = (NSNumber *)prod[@"quantity"];
 
-					Product *prod = [
-						[Product alloc]
+					ProductModel *prod = [
+						[ProductModel alloc]
 							initWithProdName: prodName
 											  prodID: prodID
 												 price: price
@@ -183,7 +182,7 @@
 			makeObjectsPerformSelector: @selector(removeFromSuperview)
 	];
 
-	for (Product *prod in productList) {
+	for (ProductModel *prod in productList) {
 		// Initialize ProductViewController for each product model.
 		ProductViewController *prodViewController =	[
 			[ProductViewController alloc]initWithData: prod

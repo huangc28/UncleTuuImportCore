@@ -1,15 +1,15 @@
 #import "Foundation/Foundation.h"
 
-#import "SharedLibraries/Product.h"
+#import "ProductModel.h"
 
 @interface ProductListViewController : UIViewController {
-	NSArray<Product *> *_products;
+	NSArray<ProductModel *> *_products;
 	UIScrollView *_scrollView;
 	UIStackView *_prodsStackView;
 	UIView *_contentView;
 }
 
-@property(retain, nonatomic, readwrite) NSArray<Product *> *products; //@synthesize products=_products
+@property(retain, nonatomic, readwrite) NSArray<ProductModel *> *products; //@synthesize products=_products
 @property(retain, nonatomic) UIScrollView *scrollView; //@synthesize scrollView=_scrollView
 @property(retain, nonatomic) UIStackView *prodsStackView; //@synthesize prodsStackView=_prodsStackView
 

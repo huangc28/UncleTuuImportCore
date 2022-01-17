@@ -1,7 +1,6 @@
 #import "StoreKit/StoreKit.h"
 
 #import "SharedLibraries/HttpUtil.h"
-#import "SharedLibraries/Product.h"
 #import "SharedLibraries/Alert.h"
 
 #import "AppViewController.h"

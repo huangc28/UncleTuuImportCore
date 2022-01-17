@@ -7,7 +7,7 @@
 
 @implementation ProductViewController
 
-- (instancetype)initWithData:(Product *)product {
+- (instancetype)initWithData:(ProductModel *)product {
 	self = [super init];
 
 	if (self) {

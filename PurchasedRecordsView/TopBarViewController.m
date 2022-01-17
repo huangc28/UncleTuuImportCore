@@ -1,4 +1,4 @@
-#import "../Util.h"
+#import "../ColorHashGenerator.h"
 #import "../Routes.h"
 #import "TopBarViewController.h"
 

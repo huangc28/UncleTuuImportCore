@@ -1,6 +1,6 @@
 #import "AppBottomViewController.h"
 
-#import "../Util.h"
+#import "../ColorHashGenerator.h"
 #import "../Routes.h"
 
 @implementation AppBottomViewController

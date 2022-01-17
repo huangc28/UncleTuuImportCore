@@ -5,12 +5,10 @@
 #import "SharedLibraries/Alert.h"
 #import "SharedLibraries/SpinnerViewController.h"
 
-#import "AppTopViewController.h"
-
+#import "../ColorHashGenerator.h"
 #import "../Auth/AuthManager.h"
 #import "../AuthModel.h"
-
-#import "../Util.h"
+#import "AppTopViewController.h"
 
 @interface AppTopViewController ()<UITextFieldDelegate>
 @end

@@ -1,15 +1,15 @@
 #import "Foundation/Foundation.h"
 
-#import "SharedLibraries/Product.h"
+#import "ProductModel.h"
 
 @interface ProductViewController : UIViewController {
-	Product *_data;
+	ProductModel *_data;
 	UIStackView *_prodView;
 }
 
-- (instancetype)initWithData:(Product *)product;
+- (instancetype)initWithData:(ProductModel *)product;
 
-@property(retain, nonatomic) Product *data; // @synthesize data=_data
+@property(retain, nonatomic) ProductModel *data; // @synthesize data=_data
 @property(retain, nonatomic) UIStackView *prodView; // @synthesize prodView=_prodView
 
 @end
