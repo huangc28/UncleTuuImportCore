@@ -17,8 +17,8 @@
 		[UIView alloc] initWithFrame: CGRectMake(
 			0,
 			80,
-			[[UIScreen mainScreen] applicationFrame].size.width,
-			[[UIScreen mainScreen] applicationFrame].size.height - 50
+			[[UIScreen mainScreen] bounds].size.width,
+			[[UIScreen mainScreen] bounds].size.height - 50
 		)
 	];
 
@@ -197,8 +197,8 @@
 	self.scrollView = [[UIScrollView alloc]init];
 	self.scrollView.translatesAutoresizingMaskIntoConstraints = NO;
 	self.scrollView.contentSize = CGSizeMake(
-		[[UIScreen mainScreen] applicationFrame].size.width,
-		[[UIScreen mainScreen] applicationFrame].size.height
+		[[UIScreen mainScreen] bounds].size.width,
+		[[UIScreen mainScreen] bounds].size.height
 	);
 }
 

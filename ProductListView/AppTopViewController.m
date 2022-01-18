@@ -32,7 +32,7 @@
 		[UIView alloc] initWithFrame:CGRectMake(
 			0,
 			0,
-			[[UIScreen mainScreen] applicationFrame].size.width,
+			[[UIScreen mainScreen] bounds].size.width,
 			80
 		)
 	];

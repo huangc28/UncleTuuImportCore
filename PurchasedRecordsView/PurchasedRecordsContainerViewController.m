@@ -13,8 +13,8 @@
 		[UIView alloc] initWithFrame: CGRectMake(
 			0,
 			0,
-			[[UIScreen mainScreen] applicationFrame].size.width,
-			[[UIScreen mainScreen] applicationFrame].size.height
+			[[UIScreen mainScreen] bounds].size.width,
+			[[UIScreen mainScreen] bounds].size.height
 		)
 	];
 

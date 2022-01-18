@@ -14,8 +14,8 @@
     [UIView alloc] initWithFrame: CGRectMake(
 	  0,
 	  80, // reserve for the height of the topbar.
-	  [[UIScreen mainScreen] applicationFrame].size.width,
-	  [[UIScreen mainScreen] applicationFrame].size.height
+	  [[UIScreen mainScreen] bounds].size.width,
+	  [[UIScreen mainScreen] bounds].size.height
     )
   ];
 
@@ -36,8 +36,8 @@
   self.scrollView = [[UIScrollView alloc] init];
   self.scrollView.translatesAutoresizingMaskIntoConstraints = NO;
   self.scrollView.contentSize = CGSizeMake(
-		[[UIScreen mainScreen] applicationFrame].size.width,
-		[[UIScreen mainScreen] applicationFrame].size.height
+		[[UIScreen mainScreen] bounds].size.width,
+		[[UIScreen mainScreen] bounds].size.height
   );
 }
 
