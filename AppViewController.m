@@ -37,14 +37,10 @@
 	appView.backgroundColor = [UIColor whiteColor];
 
 	[self registerRouteChangeEvent];
+	[self registerCloseImporterEvent];
 
 	// Retrieve UIViewController from routes.
 	[self changeRoute:Routes.productListView];
-	//self.currentRouteViewController = [self.routes GetRouteUIViewController:Routes.productListView];
-
-	//[self addChildViewController: self.currentRouteViewController];
-	//[self.view addSubview: self.currentRouteViewController.view];
-	//[self.currentRouteViewController didMoveToParentViewController:self];
 }
 
 - (void) renderImportApp:(UIApplication *)app {
