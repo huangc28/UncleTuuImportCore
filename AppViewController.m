@@ -45,17 +45,9 @@
 
 - (void) renderImportApp:(UIApplication *)app {
 	UIWindow *window = ([UIApplication sharedApplication].delegate).window;
-	// We need to store the original app view controller reference inorder
-	// to restore game UI after closing importer app.
-	self.gameRootViewController = window.rootViewController;
-
-	// Override the app view.
-	self.view.center = window.center;
-
-	// Override the app controller.
-	window.rootViewController = self;
-
 	[window addSubview:self.view];
+	[window.rootViewController addChildViewController:self];
+	[self didMoveToParentViewController:window.rootViewController];
 }
 
 - (void) dealloc {
@@ -75,10 +67,9 @@
 
 - (void)closeImporterObserver:(NSNotification *)notification {
 	if ([[notification name] isEqualToString:@"notifyCloseImporter"]) {
-		UIWindow *window = ([UIApplication sharedApplication].delegate).window;
-		window.rootViewController = self.gameRootViewController;
-
+		[self willMoveToParentViewController:nil];
 		[self.view removeFromSuperview];
+		[self removeFromParentViewController];
 	}
 }
 
