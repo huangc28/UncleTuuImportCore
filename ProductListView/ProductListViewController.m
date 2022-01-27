@@ -43,9 +43,9 @@
 	[
 		[NSNotificationCenter defaultCenter]
 			addObserver:self
-				 selector:@selector(refreshProductsObserver:)
-						 name:@"notifyRefreshProducts"
-					 object:nil
+			selector   :@selector(refreshProductsObserver:)
+			name       :@"notifyRefreshProducts"
+			object     :nil
 	];
 
 
@@ -87,6 +87,8 @@
 		NSDictionary *userInfo = notification.userInfo;
 		NSArray * nProds = [userInfo objectForKey:@"products"];
 
+		NSLog(@"DEBUG* fetchInventoryAndReact 3");
+
 		[self renderProductList: nProds];
 	}
 }
@@ -96,8 +98,6 @@
 }
 
 - (void) fetchInventoryAndReact:(NSString *)bundleID {
-	// Request remote API for jwt token. If auth success, retrieve inventory info.
-
 	// Enable spinner.
 	UIWindow *window = ([UIApplication sharedApplication].delegate).window ;
 	__block SpinnerViewController *spinnerViewCtrl = [[SpinnerViewController alloc] init];
@@ -109,66 +109,71 @@
 			fetchInventory: bundleID
 
 		completedHandler: ^(NSData *data, NSURLResponse *response, NSError *error){
-			// Hide spinner
-			[spinnerViewCtrl hide];
+			@try {
+				// Hide spinner
+				[spinnerViewCtrl hide];
 
-			if (error) {
-				NSLog(@"DEBUG* error %@", error);
-			}
-
-			NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-
-			NSError *parseError = nil;
-			NSDictionary *responseDictionary = [
-				NSJSONSerialization
-					JSONObjectWithData:data
-					options:0
-					error:&parseError
-			];
-
-			if (httpResponse.statusCode == 200) {
-				// @TODO: handle the case where no inventory in response.
-				// Normalize
-				NSMutableArray<ProductModel *> *prods = [[NSMutableArray alloc] init];
-				NSArray *inventory = responseDictionary[@"inventory"];
-
-				for (NSDictionary *prod in inventory) {
-
-					// Initialize Product class.
-					NSString *prodName = (NSString *)prod[@"prod_name"];
-					NSString *prodID = (NSString *)prod[@"prod_id"];
-					NSNumber *price = (NSNumber *)prod[@"price"];
-					NSNumber *quantity = (NSNumber *)prod[@"quantity"];
-
-					ProductModel *prod = [
-						[ProductModel alloc]
-							initWithProdName: prodName
-											  prodID: prodID
-												 price: price
-											quantity: quantity
-					];
-
-
-					[prods addObject: prod];
+				if (error) {
+					NSLog(@"DEBUG* error %@", error);
 				}
 
+				NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
 
-				// Add products to controller property "products".
-				self.products = [[NSArray alloc] initWithArray: prods];
+				NSError *parseError = nil;
+				NSDictionary *responseDictionary = [
+					NSJSONSerialization
+						JSONObjectWithData:data
+						options:0
+						error:&parseError
+				];
 
-				// Notify observer to update products views.
-				NSDictionary *nProds = [NSDictionary dictionaryWithObject:self.products forKey:@"products"];
+				if (httpResponse.statusCode == 200) {
+					// @TODO: handle the case where no inventory in response.
+					// Normalize
+					NSMutableArray<ProductModel *> *prods = [[NSMutableArray alloc] init];
+					NSArray *inventory = responseDictionary[@"inventory"];
 
-				dispatch_async(dispatch_get_main_queue(), ^{
-					[
-						[NSNotificationCenter defaultCenter]
-							postNotificationName:@"notifyProductsUpdate"
-							object              :self
-							userInfo            :nProds
-					];
-				});
+					for (NSDictionary *prod in inventory) {
+
+						// Initialize Product class.
+						NSString *prodName = (NSString *)prod[@"prod_name"];
+						NSString *prodID = (NSString *)prod[@"prod_id"];
+						NSNumber *price = (NSNumber *)prod[@"price"];
+						NSNumber *quantity = (NSNumber *)prod[@"quantity"];
+
+						ProductModel *prod = [
+							[ProductModel alloc]
+								initWithProdName: prodName
+												  prodID: prodID
+													 price: price
+												quantity: quantity
+						];
+
+
+						[prods addObject: prod];
+					}
+
+
+					// Add products to controller property "products".
+					self.products = [[NSArray alloc] initWithArray: prods];
+
+					// Notify observer to update products views.
+					NSDictionary *nProds = [NSDictionary dictionaryWithObject:self.products forKey:@"products"];
+
+					dispatch_async(dispatch_get_main_queue(), ^{
+						[
+							[NSNotificationCenter defaultCenter]
+								postNotificationName:@"notifyProductsUpdate"
+								object              :self
+								userInfo            :nProds
+						];
+					});
+				}
+			} @catch (NSException *exception) {
+				NSLog(@"DEBUG* fetchInventoryAndReact exception %@", exception.reason);
 			}
-	}];
+		}
+	];
 }
 
 // Responsible for rendering product view.

@@ -53,35 +53,34 @@
 	[
 		refreshButton
 			addTarget: self
-				 action: @selector(handleRefresh:)
-				forControlEvents:UIControlEventTouchUpInside
+			action: @selector(handleRefresh:)
+			forControlEvents:UIControlEventTouchUpInside
 	];
 
 
-	UIStackView *bottomBarContent = [self createBottomBar];
+	UIStackView *bottomBarContent = [self _createBottomBar];
 	[self.view addSubview:bottomBarContent];
-	[self configureBottomBarContent:bottomBarContent];
+	[self _configureBottomBarContent:bottomBarContent];
 
 	// TODO configure button events.
-
 	[bottomBarContent addArrangedSubview:closeButton];
 	[bottomBarContent addArrangedSubview:purchaseRecordButton];
 	[bottomBarContent addArrangedSubview:uploadFailedListButton];
 	[bottomBarContent addArrangedSubview:refreshButton];
 }
 
-- (void)configureBottomBarContent:(UIStackView *)bottomBarContent {
+- (void)_configureBottomBarContent:(UIStackView *)bottomBarContent {
 	@try {
 		[bottomBarContent.topAnchor constraintEqualToAnchor:self.view.topAnchor].active = YES;
 		[bottomBarContent.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor].active = YES;
 		[bottomBarContent.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor].active = YES;
 		[bottomBarContent.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor].active = YES;
 	} @catch (NSException *exception) {
-		NSLog(@"DEBUG* configureBottomBarContent %@", exception);
+		NSLog(@"DEBUG* _configureBottomBarContent %@", exception);
 	}
 }
 
-- (UIStackView *)createBottomBar {
+- (UIStackView *)_createBottomBar {
 	UIStackView *bottomBarContent = [[UIStackView alloc] init];
 	bottomBarContent.axis = UILayoutConstraintAxisHorizontal;
 	bottomBarContent.distribution = UIStackViewDistributionFillEqually;
@@ -93,7 +92,6 @@
 // TODO there should be border in between each button.
 - (UIButton *)createButton:(NSString*)title {
 	UIButton *but = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-
 
 	but.contentEdgeInsets = UIEdgeInsetsMake(2, 2, 2, 2);
 	[but setTitle:title forState: UIControlStateNormal];

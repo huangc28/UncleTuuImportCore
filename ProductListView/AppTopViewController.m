@@ -152,10 +152,13 @@
 
 				// Store jwt in AuthManager
 				if (httpResponse.statusCode == 200) {
-					AuthManager *authManager = [AuthManager sharedInstance];
-					authManager.jwt = responseDictionary[@"jwt"];
+					NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
 
-					// TODO change login button to logout.
+					[
+						prefs
+							setObject:responseDictionary[@"jwt"]
+							forKey   :@"atuu_jwt"
+					];
 
 					return;
 				} else {

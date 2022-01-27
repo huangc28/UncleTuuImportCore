@@ -15,7 +15,8 @@ static AuthManager *_sharedInstance = nil;
 }
 
 - (_Bool) isLoggedIn {
-	return self.jwt != nil;
+	NSUserDefaults *prefs = [NSUserDefaults standardUserDefaults];
+	return [prefs valueForKey:@"atuu_jwt"] != nil && [[prefs stringForKey:@"atuu_jwt"] length] > 0;
 }
 
 @end

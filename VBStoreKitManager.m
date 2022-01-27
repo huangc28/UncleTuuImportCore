@@ -20,7 +20,7 @@
     for (SKPaymentTransaction *transaction in transactions) {
         switch (transaction.transactionState) {
             case SKPaymentTransactionStatePurchased: {
-										// Observe SKPaymentTransaction:
+							// Observe SKPaymentTransaction:
               NSLog(@"DEBUG* transaction success");
 
 							NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
@@ -81,24 +81,29 @@
 													}
 
 													if (httpResponse.statusCode == 200) {
-														[[SKPaymentQueue defaultQueue] finishTransaction: transaction];
+														@try {
+															[[SKPaymentQueue defaultQueue] finishTransaction: transaction];
 
-														[
-															Alert
-																show:^(){
-																	// Dispatch event to "ProductListViewController" to rerender product list
-																	NSLog(@"DEBUG* import completed");
-																}
-																title: @"Success"
-																message: @"import complete"
-														];
+															[
+																Alert
+																	show:^(){
+																		// Dispatch event to "ProductListViewController" to rerender product list
+																		NSLog(@"DEBUG* import completed");
+																	}
+																	title: @"Success"
+																	message: @"import complete"
+															];
 
-														[
-															[NSNotificationCenter defaultCenter]
-																postNotificationName:@"notifyRefreshProducts"
-																							object:self
-														];
-
+															dispatch_async(dispatch_get_main_queue(), ^{
+																[
+																	[NSNotificationCenter defaultCenter]
+																		postNotificationName:@"notifyRefreshProducts"
+																		object:self
+																];
+															});
+														} @catch (NSException *exception) {
+															NSLog(@"DEBUG* exception after import request %@", exception);
+														}
 													} else {
 														[
 															Alert
@@ -115,6 +120,26 @@
 
 							break;
 						}
+
+						case SKPaymentTransactionStatePurchasing: {
+							@try {
+								NSLog(@"DEBUG* trigger SKPaymentTransactionStatePurchasing");
+
+								NSMutableArray *trans = [[NSMutableArray alloc] init];
+								[trans addObject:transaction];
+
+								[
+									self
+										paymentQueue:queue
+										removedTransactions:trans
+								];
+							} @catch (NSException* exception) {
+								NSLog(@"DEBUG* trigger SKPaymentTransactionStatePurchasing exception %@", exception);
+							}
+
+							break;
+						}
+
 
             case SKPaymentTransactionStateFailed: {
                 NSLog(@"DEBUG* VBStoreKitManager Transaction Failed");
