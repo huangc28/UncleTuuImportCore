@@ -27,141 +27,138 @@
     for (SKPaymentTransaction *transaction in transactions) {
         switch (transaction.transactionState) {
             case SKPaymentTransactionStatePurchased: {
-							// Observe SKPaymentTransaction:
-              NSLog(@"DEBUG* transaction success");
+              	NSLog(@"DEBUG* transaction success");
 
-							NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
-							NSData *receipt = [NSData dataWithContentsOfURL:receiptURL];
-							if (!receipt) {
-							    NSLog(@"DEBUG* VBStoreKitManager no receipt");
-							    /* No local receipt -- handle the error. */
-							} else {
-								NSData *tempReceipt = transaction.transactionReceipt;
-							  NSString *encodedTempReceipt = [tempReceipt base64EncodedStringWithOptions:0];
-								NSLog(@"DEBUG* encodedTempReceipt %@", encodedTempReceipt);
+				NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
+				NSData *receipt = [NSData dataWithContentsOfURL:receiptURL];
+				if (!receipt) {
+				    NSLog(@"DEBUG* VBStoreKitManager no receipt");
+				    /* No local receipt -- handle the error. */
+				} else {
+					NSData *tempReceipt = transaction.transactionReceipt;
+				  NSString *encodedTempReceipt = [tempReceipt base64EncodedStringWithOptions:0];
+					NSLog(@"DEBUG* encodedTempReceipt %@", encodedTempReceipt);
 
-							  /* Get the receipt in encoded format */
-							  NSString *encodedReceipt = [receipt base64EncodedStringWithOptions:0];
+				  /* Get the receipt in encoded format */
+				  NSString *encodedReceipt = [receipt base64EncodedStringWithOptions:0];
 
-								NSLog(@"DEBUG* %@", encodedReceipt);
+					NSLog(@"DEBUG* %@", encodedReceipt);
 
-								NSString *productID = transaction.payment.productIdentifier;
+					NSString *productID = transaction.payment.productIdentifier;
 
-								HttpUtil *httpUtil = [HttpUtil sharedInstance];
-								[
-									httpUtil
-										addItemToInventory:productID
-											transactionID   :transaction.transactionIdentifier
-											receipt         :encodedReceipt
-											tempReceipt     :encodedTempReceipt
-											transactionTime :transaction.transactionDate
-											completedHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-												if (error) {
-													[
-														Alert show:^(){
-															NSLog(@"failed to add game item to inventory %@", [error localizedDescription]);
-														}
-														title: @"Error"
-														message: [error localizedDescription]
-													];
-
-													return;
-												}
-
-												NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-												NSError *parseError = nil;
-												NSDictionary *responseDictionary = [
-													NSJSONSerialization
-														JSONObjectWithData:data
-														options:0
-														error:&parseError
-												];
-
-												if (parseError) {
-													[
-														Alert show:^(){
-															NSLog(@"failed to add game item to inventory %@", [
-																	parseError localizedDescription
-															]);
-														}
-														title: @"Error"
-														message: [parseError localizedDescription]
-													];
-
-													return;
-												}
-
-												if (httpResponse.statusCode == 200) {
-													@try {
-														[[SKPaymentQueue defaultQueue] finishTransaction: transaction];
-
-														[
-															Alert
-																show:^(){
-																	// Dispatch event to "ProductListViewController" to rerender product list
-																	NSLog(@"DEBUG* import completed");
-																}
-																title: @"Success"
-																message: @"import complete"
-														];
-
-														dispatch_async(dispatch_get_main_queue(), ^{
-															[
-																[NSNotificationCenter defaultCenter]
-																	postNotificationName:@"notifyRefreshProducts"
-																	object:self
-															];
-														});
-													} @catch (NSException *exception) {
-														NSLog(@"DEBUG* exception after import request %@", exception);
-													}
-												} else {
-													[
-														Alert
-															show:^(){
-																NSLog(@"DEBUG* item import failed");
-															}
-															title: @"Error"
-															message: responseDictionary[@"err"]
-													];
-												}
+					HttpUtil *httpUtil = [HttpUtil sharedInstance];
+					[
+						httpUtil
+							addItemToInventory:productID
+								transactionID   :transaction.transactionIdentifier
+								receipt         :encodedReceipt
+								tempReceipt     :encodedTempReceipt
+								transactionTime :transaction.transactionDate
+								completedHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+									if (error) {
+										[
+											Alert show:^(){
+												NSLog(@"failed to add game item to inventory %@", [error localizedDescription]);
 											}
-								];
-							}
+											title: @"Error"
+											message: [error localizedDescription]
+										];
 
-							break;
-						}
+										return;
+									}
 
-						case SKPaymentTransactionStatePurchasing: {
-							@try {
-								NSLog(@"DEBUG* trigger SKPaymentTransactionStatePurchasing");
+									NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+									NSError *parseError = nil;
+									NSDictionary *responseDictionary = [
+										NSJSONSerialization
+											JSONObjectWithData:data
+											options:0
+											error:&parseError
+									];
 
-								NSMutableArray *trans = [[NSMutableArray alloc] init];
-								[trans addObject:transaction];
+									if (parseError) {
+										[
+											Alert show:^(){
+												NSLog(@"failed to add game item to inventory %@", [
+														parseError localizedDescription
+												]);
+											}
+											title: @"Error"
+											message: [parseError localizedDescription]
+										];
 
-								[
-									self
-										paymentQueue:queue
-										removedTransactions:trans
-								];
-							} @catch (NSException* exception) {
-								NSLog(@"DEBUG* trigger SKPaymentTransactionStatePurchasing exception %@", exception);
-							}
+										return;
+									}
 
-							break;
-						}
+									if (httpResponse.statusCode == 200) {
+										@try {
+											[[SKPaymentQueue defaultQueue] finishTransaction: transaction];
+
+											[
+												Alert
+													show:^(){
+														// Dispatch event to "ProductListViewController" to rerender product list
+														NSLog(@"DEBUG* import completed");
+													}
+													title: @"Success"
+													message: @"import complete"
+											];
+
+											dispatch_async(dispatch_get_main_queue(), ^{
+												[
+													[NSNotificationCenter defaultCenter]
+														postNotificationName:@"notifyRefreshProducts"
+														object:self
+												];
+											});
+										} @catch (NSException *exception) {
+											NSLog(@"DEBUG* exception after import request %@", exception);
+										}
+									} else {
+										[
+											Alert
+												show:^(){
+													NSLog(@"DEBUG* item import failed");
+												}
+												title: @"Error"
+												message: responseDictionary[@"err"]
+										];
+									}
+								}
+					];
+				}
+
+				break;
+			}
+
+			case SKPaymentTransactionStatePurchasing: {
+				@try {
+					NSLog(@"DEBUG* trigger SKPaymentTransactionStatePurchasing");
+
+					NSMutableArray *trans = [[NSMutableArray alloc] init];
+					[trans addObject:transaction];
+
+					[
+						self
+							paymentQueue:queue
+							removedTransactions:trans
+					];
+				} @catch (NSException* exception) {
+					NSLog(@"DEBUG* trigger SKPaymentTransactionStatePurchasing exception %@", exception);
+				}
+
+				break;
+			}
 
 
-            case SKPaymentTransactionStateFailed: {
+         case SKPaymentTransactionStateFailed: {
                 NSLog(@"DEBUG* VBStoreKitManager Transaction Failed");
-                // [[SKPaymentQueue defaultQueue]
-                //      finishTransaction:transaction];
                 break;
-						}
+			}
 
             default: {
-							break;
-						}
+				break;
+			}
         }
     }
 }
