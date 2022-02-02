@@ -132,21 +132,6 @@
 			}
 
 			case SKPaymentTransactionStatePurchasing: {
-				@try {
-					NSLog(@"DEBUG* trigger SKPaymentTransactionStatePurchasing");
-
-					NSMutableArray *trans = [[NSMutableArray alloc] init];
-					[trans addObject:transaction];
-
-					[
-						self
-							paymentQueue:queue
-							removedTransactions:trans
-					];
-				} @catch (NSException* exception) {
-					NSLog(@"DEBUG* trigger SKPaymentTransactionStatePurchasing exception %@", exception);
-				}
-
 				break;
 			}
 
