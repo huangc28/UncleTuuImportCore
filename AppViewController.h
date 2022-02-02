@@ -10,6 +10,7 @@
 }
 
 - (void) renderImportApp:(UIApplication *)app;
+- (void) renderImportApp;
 @property(strong, nonatomic) UIViewController *currentRouteViewController; // @synthesize currentRouteViewController=_currentRouteViewController
 
 @property(strong, nonatomic) Routes *routes; // @synthesize routes=_routes

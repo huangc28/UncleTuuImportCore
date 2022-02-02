@@ -32,9 +32,6 @@
 	[self.scrollView addSubview:self.contentView];
 	[self.contentView addSubview:self.prodsStackView];
 
-	UIStackView *headerRow = [self createHeaderRow];
-	[self.prodsStackView addArrangedSubview:headerRow];
-
 	[self setupLayout];
 
 	// An event handler that reacts to refresh product list. For example, when vendor
@@ -54,18 +51,10 @@
 	[
 		[NSNotificationCenter defaultCenter]
 			addObserver:self
-				 selector:@selector(fetchProductsObserver:)
-				 name    :@"notifyProductsUpdate"
-				object   :self
+			selector:@selector(fetchProductsObserver:)
+			name    :@"notifyProductsUpdate"
+			object  :self
 	];
-
-	dispatch_async(dispatch_get_main_queue(), ^{
-		[
-			[NSNotificationCenter defaultCenter]
-				postNotificationName:@"notifyRefreshProducts"
-											object:self
-		];
-	});
 
 	// Fetch inventory status by bundleID
 	NSString *bundleIdentifier = [[NSBundle mainBundle] bundleIdentifier];
@@ -87,8 +76,6 @@
 		NSDictionary *userInfo = notification.userInfo;
 		NSArray * nProds = [userInfo objectForKey:@"products"];
 
-		NSLog(@"DEBUG* fetchInventoryAndReact 3");
-
 		[self renderProductList: nProds];
 	}
 }
@@ -98,6 +85,7 @@
 }
 
 - (void) fetchInventoryAndReact:(NSString *)bundleID {
+	// NSLog(@"DEBUG* fetchInventoryAndReact %@", bundleID);
 	// Enable spinner.
 	UIWindow *window = ([UIApplication sharedApplication].delegate).window ;
 	__block SpinnerViewController *spinnerViewCtrl = [[SpinnerViewController alloc] init];
@@ -134,7 +122,6 @@
 					NSArray *inventory = responseDictionary[@"inventory"];
 
 					for (NSDictionary *prod in inventory) {
-
 						// Initialize Product class.
 						NSString *prodName = (NSString *)prod[@"prod_name"];
 						NSString *prodID = (NSString *)prod[@"prod_id"];
@@ -144,9 +131,9 @@
 						ProductModel *prod = [
 							[ProductModel alloc]
 								initWithProdName: prodName
-												  prodID: prodID
-													 price: price
-												quantity: quantity
+									prodID: prodID
+									price: price
+									quantity: quantity
 						];
 
 
@@ -187,7 +174,15 @@
 			makeObjectsPerformSelector: @selector(removeFromSuperview)
 	];
 
+	NSUInteger index = 0;
 	for (ProductModel *prod in productList) {
+		// If it's the first row, we render the header row first.
+		if (index == 0) {
+			UIStackView *headerRow = [self createHeaderRow];
+
+			[self.prodsStackView addArrangedSubview:headerRow];
+		}
+
 		// Initialize ProductViewController for each product model.
 		ProductViewController *prodViewController =	[
 			[ProductViewController alloc]initWithData: prod
@@ -195,6 +190,8 @@
 
 		[self.prodsStackView addArrangedSubview:prodViewController.view];
 		[self addChildViewController:prodViewController];
+
+		index++;
 	}
 }
 
@@ -252,19 +249,17 @@
 - (UIStackView *) createHeaderRow {
 	UIStackView *row = [ProductViewElementCreator createRow];
 
-	UILabel *prodNameLabel = [[UILabel alloc] init];
-	prodNameLabel.translatesAutoresizingMaskIntoConstraints = NO;
-	prodNameLabel.text = @"名稱";
+	UILabel *prodNameLabel = [ProductViewElementCreator createLabel:@"名稱"];
+	prodNameLabel.textColor = [UIColor blackColor];
+
+	UILabel *priceLabel = [ProductViewElementCreator createLabel:@"價格"];
+	priceLabel.textColor = [UIColor blackColor];
+
+	UILabel *quantityLabel = [ProductViewElementCreator createLabel:@"數量"];
+	quantityLabel.textColor = [UIColor blackColor];
+
 	[row addArrangedSubview:prodNameLabel];
-
-	UILabel *priceLabel = [[UILabel alloc] init];
-	priceLabel.translatesAutoresizingMaskIntoConstraints = NO;
-	priceLabel.text = @"價格";
 	[row addArrangedSubview:priceLabel];
-
-	UILabel *quantityLabel = [[UILabel alloc] init];
-	quantityLabel.translatesAutoresizingMaskIntoConstraints = NO;
-	quantityLabel.text = @"數量";
 	[row addArrangedSubview:quantityLabel];
 
 	return row;

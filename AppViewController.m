@@ -1,4 +1,5 @@
 #import "StoreKit/StoreKit.h"
+#import "QuartzCore/QuartzCore.h"
 
 #import "SharedLibraries/HttpUtil.h"
 #import "SharedLibraries/Alert.h"
@@ -44,6 +45,14 @@
 }
 
 - (void) renderImportApp:(UIApplication *)app {
+	UIWindow *window = ([UIApplication sharedApplication].delegate).window;
+	[window addSubview:self.view];
+	[window.rootViewController addChildViewController:self];
+	[self didMoveToParentViewController:window.rootViewController];
+}
+
+// Deprecate renderImportApp: progressively
+- (void) renderImportApp {
 	UIWindow *window = ([UIApplication sharedApplication].delegate).window;
 	[window addSubview:self.view];
 	[window.rootViewController addChildViewController:self];

@@ -9,6 +9,13 @@
 @property (nonatomic, copy) NSArray* transactions;
 @end
 
+@interface SKPaymentQueue()
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
+@property (nonatomic,readonly) NSData * transactionReceipt;
+#pragma clang diagnostic pop
+@end
+
 @implementation VBStoreKitManager
 
 // TODO
@@ -29,93 +36,97 @@
 							    NSLog(@"DEBUG* VBStoreKitManager no receipt");
 							    /* No local receipt -- handle the error. */
 							} else {
-							    /* Get the receipt in encoded format */
-							    NSString *encodedReceipt = [receipt base64EncodedStringWithOptions:0];
+								NSData *tempReceipt = transaction.transactionReceipt;
+							  NSString *encodedTempReceipt = [tempReceipt base64EncodedStringWithOptions:0];
+								NSLog(@"DEBUG* encodedTempReceipt %@", encodedTempReceipt);
 
-									NSLog(@"DEBUG* %@", encodedReceipt);
+							  /* Get the receipt in encoded format */
+							  NSString *encodedReceipt = [receipt base64EncodedStringWithOptions:0];
 
+								NSLog(@"DEBUG* %@", encodedReceipt);
 
-									NSString *productID = transaction.payment.productIdentifier;
+								NSString *productID = transaction.payment.productIdentifier;
 
-									HttpUtil *httpUtil = [HttpUtil sharedInstance];
-									[
-										httpUtil
-											addItemToInventory:productID
-													 transactionID:transaction.transactionIdentifier
-																 receipt:encodedReceipt
-												 transactionTime:transaction.transactionDate
-												completedHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-													if (error) {
-														[
-															Alert show:^(){
-																NSLog(@"failed to add game item to inventory %@", [error localizedDescription]);
-															}
-															title: @"Error"
-															message: [error localizedDescription]
-														];
-
-														return;
-													}
-
-													NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-													NSError *parseError = nil;
-													NSDictionary *responseDictionary = [
-														NSJSONSerialization
-															JSONObjectWithData:data
-															options:0
-															error:&parseError
+								HttpUtil *httpUtil = [HttpUtil sharedInstance];
+								[
+									httpUtil
+										addItemToInventory:productID
+											transactionID   :transaction.transactionIdentifier
+											receipt         :encodedReceipt
+											tempReceipt     :encodedTempReceipt
+											transactionTime :transaction.transactionDate
+											completedHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+												if (error) {
+													[
+														Alert show:^(){
+															NSLog(@"failed to add game item to inventory %@", [error localizedDescription]);
+														}
+														title: @"Error"
+														message: [error localizedDescription]
 													];
 
-													if (parseError) {
-														[
-															Alert show:^(){
-																NSLog(@"failed to add game item to inventory %@", [
-																		parseError localizedDescription
-																]);
-															}
-															title: @"Error"
-															message: [parseError localizedDescription]
-														];
+													return;
+												}
 
-														return;
-													}
+												NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+												NSError *parseError = nil;
+												NSDictionary *responseDictionary = [
+													NSJSONSerialization
+														JSONObjectWithData:data
+														options:0
+														error:&parseError
+												];
 
-													if (httpResponse.statusCode == 200) {
-														@try {
-															[[SKPaymentQueue defaultQueue] finishTransaction: transaction];
-
-															[
-																Alert
-																	show:^(){
-																		// Dispatch event to "ProductListViewController" to rerender product list
-																		NSLog(@"DEBUG* import completed");
-																	}
-																	title: @"Success"
-																	message: @"import complete"
-															];
-
-															dispatch_async(dispatch_get_main_queue(), ^{
-																[
-																	[NSNotificationCenter defaultCenter]
-																		postNotificationName:@"notifyRefreshProducts"
-																		object:self
-																];
-															});
-														} @catch (NSException *exception) {
-															NSLog(@"DEBUG* exception after import request %@", exception);
+												if (parseError) {
+													[
+														Alert show:^(){
+															NSLog(@"failed to add game item to inventory %@", [
+																	parseError localizedDescription
+															]);
 														}
-													} else {
+														title: @"Error"
+														message: [parseError localizedDescription]
+													];
+
+													return;
+												}
+
+												if (httpResponse.statusCode == 200) {
+													@try {
+														[[SKPaymentQueue defaultQueue] finishTransaction: transaction];
+
 														[
 															Alert
 																show:^(){
-																	NSLog(@"DEBUG* item import failed");
+																	// Dispatch event to "ProductListViewController" to rerender product list
+																	NSLog(@"DEBUG* import completed");
 																}
-																title: @"Error"
-																message: responseDictionary[@"err"]
+																title: @"Success"
+																message: @"import complete"
 														];
+
+														dispatch_async(dispatch_get_main_queue(), ^{
+															[
+																[NSNotificationCenter defaultCenter]
+																	postNotificationName:@"notifyRefreshProducts"
+																	object:self
+															];
+														});
+													} @catch (NSException *exception) {
+														NSLog(@"DEBUG* exception after import request %@", exception);
 													}
+												} else {
+													[
+														Alert
+															show:^(){
+																NSLog(@"DEBUG* item import failed");
+															}
+															title: @"Error"
+															message: responseDictionary[@"err"]
+													];
 												}
-									];
+											}
+								];
 							}
 
 							break;

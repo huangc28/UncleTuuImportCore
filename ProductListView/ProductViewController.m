@@ -61,18 +61,21 @@
 
 	// Product name.
 	UILabel *nameLabel = [ProductViewElementCreator createLabel:self.data.prodName];
+	nameLabel.textColor = [UIColor blackColor];
 
 	// Price.
 	UILabel *priceLabel = [
 		ProductViewElementCreator
 			createLabel:[[NSString alloc]initWithFormat: @"%@", self.data.price]
 	];
+	priceLabel.textColor = [UIColor blackColor];
 
 	// Quantity.
 	UILabel *quantityLabel = [
 		ProductViewElementCreator
 			createLabel:[[NSString alloc]initWithFormat: @"%@", self.data.quantity]
 	];
+	quantityLabel.textColor = [UIColor blackColor];
 
 	[row addArrangedSubview:nameLabel];
 	[row addArrangedSubview:priceLabel];
