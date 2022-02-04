@@ -85,7 +85,6 @@
 }
 
 - (void) fetchInventoryAndReact:(NSString *)bundleID {
-	// NSLog(@"DEBUG* fetchInventoryAndReact %@", bundleID);
 	// Enable spinner.
 	UIWindow *window = ([UIApplication sharedApplication].delegate).window ;
 	__block SpinnerViewController *spinnerViewCtrl = [[SpinnerViewController alloc] init];
@@ -174,15 +173,11 @@
 			makeObjectsPerformSelector: @selector(removeFromSuperview)
 	];
 
-	NSUInteger index = 0;
+	UIStackView *headerRow = [self createHeaderRow];
+
+	[self.prodsStackView addArrangedSubview:headerRow];
+
 	for (ProductModel *prod in productList) {
-		// If it's the first row, we render the header row first.
-		if (index == 0) {
-			UIStackView *headerRow = [self createHeaderRow];
-
-			[self.prodsStackView addArrangedSubview:headerRow];
-		}
-
 		// Initialize ProductViewController for each product model.
 		ProductViewController *prodViewController =	[
 			[ProductViewController alloc]initWithData: prod
@@ -190,8 +185,6 @@
 
 		[self.prodsStackView addArrangedSubview:prodViewController.view];
 		[self addChildViewController:prodViewController];
-
-		index++;
 	}
 }
 
