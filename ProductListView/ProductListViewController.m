@@ -1,7 +1,7 @@
 #import "SharedLibraries/HttpUtil.h"
 #import "SharedLibraries/ProductViewElementCreator.h"
-#import "SharedLibraries/SpinnerViewController.h"
 
+#import "../SpinnerViewController.h"
 #import "ProductListViewController.h"
 #import "ProductViewController.h"
 

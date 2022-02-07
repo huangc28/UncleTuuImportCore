@@ -97,8 +97,6 @@
 		NSDictionary *userInfo = notification.userInfo;
 		NSString *routeName = [userInfo objectForKey:@"routeName"];
 
-		NSLog(@"DEBUG* routeName %@", routeName);
-
 		[self changeRoute:routeName];
 	}
 }

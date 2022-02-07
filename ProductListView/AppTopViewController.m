@@ -3,8 +3,8 @@
 #import "SharedLibraries/HttpUtil.h"
 #import "SharedLibraries/Product.h"
 #import "SharedLibraries/Alert.h"
-#import "SharedLibraries/SpinnerViewController.h"
 
+#import "../SpinnerViewController.h"
 #import "../ColorHashGenerator.h"
 #import "../Auth/AuthManager.h"
 #import "../AuthModel.h"
@@ -82,7 +82,7 @@
 	[
 		but
 			addTarget: self
-				 action: @selector(handleSubmit:)
+				 action: @selector(_handleSubmit:)
 				forControlEvents:UIControlEventTouchUpInside
 	];
 	[but setFrame: CGRectMake(400, 10, 50, 50)];
@@ -101,7 +101,7 @@
 	authModel.password = arg.text;
 }
 
-- (void) handleSubmit:(UIButton *)arg1 {
+- (void)_handleSubmit:(UIButton *)arg1 {
 	NSString *username = authModel.username;
 	NSString *password = authModel.password;
 
