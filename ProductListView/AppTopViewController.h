@@ -9,8 +9,9 @@
 - (UIButton *)createSubmitButton;
 - (void) dismissKeyboard;
 
-@property (weak, nonatomic) IBOutlet UITextField *usernameTextField;
-@property (weak, nonatomic) IBOutlet UITextField *passwordTextField;
-@property (retain, nonatomic) AuthModel *authModel; // @synthesize authModel=_authModel;
+@property (strong, nonatomic) UIStackView *topBarStackView;
+@property (strong, nonatomic) IBOutlet UITextField *usernameTextField;
+@property (strong, nonatomic) IBOutlet UITextField *passwordTextField;
+@property (strong, nonatomic) AuthModel *authModel; // @synthesize authModel=_authModel;
 
 @end

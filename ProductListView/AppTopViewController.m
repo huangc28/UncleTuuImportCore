@@ -41,22 +41,87 @@
 	topBar.backgroundColor = UIColorFromRGB(0x4A76F0);
 	self.view = topBar;
 
+	// setup product stack view
+	[self _setupTopBarStackView];
+	[self.view addSubview:self.topBarStackView];
+	[self _configureTopBarStackView];
+
+
 	// Create username text field
-	UITextField *utf = [[UITextField alloc] initWithFrame:CGRectMake(10, 10, 150, 50)];
+	self.usernameTextField = [self _createUsernameTextField];
+	self.usernameTextField.delegate = self;
+
+
+	// Create password text field
+	self.passwordTextField = [self _createPasswordTextField];
+	self.passwordTextField.delegate = self;
+
+
+	// Create a button to submit auth credential
+	UIButton *submitButton = [self createSubmitButton];
+
+	[self.topBarStackView addArrangedSubview: self.usernameTextField];
+	[self.topBarStackView addArrangedSubview: self.passwordTextField];
+	[self.topBarStackView addArrangedSubview: submitButton];
+}
+
+- (void) _setupTopBarStackView {
+  self.topBarStackView = [[UIStackView alloc] init];
+  self.topBarStackView.axis = UILayoutConstraintAxisHorizontal;
+  self.topBarStackView.alignment = UIStackViewAlignmentCenter;
+  self.topBarStackView.distribution = UIStackViewDistributionFillEqually;
+  self.topBarStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.topBarStackView.spacing = 3;
+}
+
+- (void)_configureTopBarStackView {
+	[self.topBarStackView.topAnchor constraintEqualToAnchor:self.view.topAnchor].active = YES;
+  [self.topBarStackView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor].active = YES;
+	[self.topBarStackView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor].active = YES;
+  [self.topBarStackView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor].active = YES;
+}
+
+- (UITextField *)_createUsernameTextField {
+	UITextField *utf = [[UITextField alloc] init];
+	[
+		utf
+			setContentHuggingPriority:250
+			forAxis                  :UILayoutConstraintAxisHorizontal
+	];
+
 
 	utf.backgroundColor = [UIColor whiteColor];
 	utf.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"用戶名"];
 	[
 		utf
-			addTarget: self
-				 action: @selector(usernameDidChange:)
-				 forControlEvents: UIControlEventAllEditingEvents
+			addTarget            :self
+				 action          :@selector(usernameDidChange:)
+				 forControlEvents:UIControlEventAllEditingEvents
 	];
-	self.usernameTextField = utf;
-	self.usernameTextField.delegate = self;
 
-	// Create password text field
-	UITextField *ptf = [[UITextField alloc] initWithFrame:CGRectMake(180, 10, 150, 50)];
+	NSLayoutConstraint * height = [
+		NSLayoutConstraint
+			constraintWithItem:utf
+			attribute:NSLayoutAttributeHeight
+			relatedBy:NSLayoutRelationEqual
+			toItem:nil
+			attribute:NSLayoutAttributeHeight
+			multiplier:1.0
+			constant:70
+	];
+
+	[utf addConstraints:@[height]];
+
+	return utf;
+}
+
+- (UITextField *)_createPasswordTextField {
+	UITextField *ptf = [[UITextField alloc] init];
+	[
+		ptf
+			setContentHuggingPriority:250
+			forAxis                  :UILayoutConstraintAxisHorizontal
+	];
 	ptf.backgroundColor = [UIColor whiteColor];
 	ptf.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"密碼"];
 	[
@@ -65,19 +130,24 @@
 				 action: @selector(passwordDidChange:)
 				 forControlEvents: UIControlEventAllEditingEvents
 	];
-	self.passwordTextField = ptf;
-	self.passwordTextField.delegate = self;
 
-	// Create a button to submit auth credential
-	UIButton *submitButton = [self createSubmitButton];
+	NSLayoutConstraint * height = [
+		NSLayoutConstraint
+			constraintWithItem:ptf
+			attribute:NSLayoutAttributeHeight
+			relatedBy:NSLayoutRelationEqual
+			toItem:nil
+			attribute:NSLayoutAttributeHeight
+			multiplier:1.0
+			constant:70
+	];
 
-	[self.view addSubview: self.usernameTextField];
-	[self.view addSubview: self.passwordTextField];
-	[self.view addSubview: submitButton];
+	[ptf addConstraints:@[height]];
+
+	return ptf;
 }
 
-
-- (UIButton *) createSubmitButton {
+- (UIButton *)createSubmitButton {
 	UIButton *but = [UIButton buttonWithType:UIButtonTypeRoundedRect];
 	[
 		but
@@ -85,7 +155,13 @@
 				 action: @selector(_handleSubmit:)
 				forControlEvents:UIControlEventTouchUpInside
 	];
-	[but setFrame: CGRectMake(400, 10, 50, 50)];
+
+	[
+		but
+			setContentHuggingPriority:UILayoutPriorityDefaultHigh
+			forAxis                  :UILayoutConstraintAxisHorizontal
+	];
+
 	[but setTitle: @"登入" forState: UIControlStateNormal];
 	[but setTitleColor:[UIColor colorWithRed:36/255.0 green:71/255.0 blue:113/255.0 alpha:1.0] forState:UIControlStateNormal];
 	[but setExclusiveTouch: YES];
