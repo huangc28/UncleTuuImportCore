@@ -139,7 +139,19 @@
 }
 
 - (void)handleUploadFailedList:(UIButton *)sender {
-	NSLog(@"DEBUG* handleUploadFailedList");
+	dispatch_async(dispatch_get_main_queue(), ^{
+		NSDictionary *routeName = [
+			NSDictionary dictionaryWithObject:Routes.importFailedView
+			forKey:@"routeName"
+		];
+
+		[
+			[NSNotificationCenter defaultCenter]
+				postNotificationName:@"notifyRouteChange"
+				object:nil
+				userInfo:routeName
+		];
+	});
 }
 
 - (void)handleRefresh:(UIButton *)sender {
@@ -147,8 +159,8 @@
 		[
 			[NSNotificationCenter defaultCenter]
 				postNotificationName:@"notifyRefreshProducts"
-											object:nil
-										userInfo:nil
+				object:nil
+				userInfo:nil
 		];
 	});
 }

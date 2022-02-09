@@ -7,9 +7,9 @@
 	self.view.backgroundColor = [UIColor colorWithWhite:0 alpha:0.7];
   self.spinnerView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:
 UIActivityIndicatorViewStyleWhiteLarge];
-
-  self.spinnerView.translatesAutoresizingMaskIntoConstraints = false;
-  [self.spinnerView startAnimating];
+  	self.spinnerView.translatesAutoresizingMaskIntoConstraints = false;
+	 
+  	[self.spinnerView startAnimating];
 
 	[self.view addSubview:self.spinnerView];
 

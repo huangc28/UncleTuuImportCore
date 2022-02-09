@@ -19,9 +19,8 @@
     )
   ];
 
-  self.contentView = [[UIView alloc] init];
-  self.contentView.translatesAutoresizingMaskIntoConstraints = NO;
 
+	[self setupContentView];
   [self setupScrollView];
   [self setupPurchasedRecordsStackView];
 
@@ -30,6 +29,11 @@
   [self.contentView addSubview:self.purchasedRecordStackView];
 
   [self setupLayout];
+}
+
+- (void) setupContentView {
+  self.contentView = [[UIView alloc] init];
+  self.contentView.translatesAutoresizingMaskIntoConstraints = NO;
 }
 
 - (void) setupScrollView {
@@ -75,18 +79,19 @@
 	}
 }
 
-- (void) render {
+- (void)render {
   [
   	self.purchasedRecordStackView.subviews
   		makeObjectsPerformSelector: @selector(removeFromSuperview)
   ];
 
   for (PurchasedRecordModel* purchaseRecord in self.purchaseRecords) {
-	PurchasedRecordViewController *prViewCtrl = [
-		[PurchasedRecordViewController alloc]initWithData:purchaseRecord];
+		PurchasedRecordViewController *prViewCtrl = [
+			[PurchasedRecordViewController alloc]initWithData:purchaseRecord
+		];
 
-	[self.purchasedRecordStackView addArrangedSubview:prViewCtrl.view];
-	[self addChildViewController:prViewCtrl];
+		[self.purchasedRecordStackView addArrangedSubview:prViewCtrl.view];
+		[self addChildViewController:prViewCtrl];
   }
 }
 

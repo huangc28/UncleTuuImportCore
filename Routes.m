@@ -2,6 +2,7 @@
 
 #import "ProductListView/ProductListViewContainerViewController.h"
 #import "PurchasedRecordsView/PurchasedRecordsContainerViewController.h"
+#import "ImportFailedList/ImportFailedContainerViewController.h"
 
 @implementation Routes
 
@@ -9,7 +10,7 @@
 // https://stackoverflow.com/questions/1063229/objective-c-static-class-level-variables
 static NSString *productListView = @"productListView";
 static NSString *purchasedRecordsView = @"purchasedRecordsView";
-static NSString *uploadFailedList = @"uploadFailedListView";
+static NSString *importFailedView = @"importFailedView";
 
 + (instancetype) sharedInstance {
 	@try {
@@ -36,8 +37,8 @@ static NSString *uploadFailedList = @"uploadFailedListView";
 	return purchasedRecordsView;
 }
 
-+ (NSString *)uploadFailedList {
-	return uploadFailedList;
++ (NSString *)importFailedView {
+	return importFailedView;
 }
 
 // How to assign null value to NSDictionary property:
@@ -50,7 +51,7 @@ static NSString *uploadFailedList = @"uploadFailedListView";
 	NSDictionary *routeConfig = @{
 		productListView     :(UIViewController *)[NSNull null],
 		purchasedRecordsView:(UIViewController *)[NSNull null],
-		uploadFailedList    :(UIViewController *)[NSNull null]
+		importFailedView    :(UIViewController *)[NSNull null]
 	};
 
 	self.routes = [routeConfig mutableCopy];
@@ -90,7 +91,7 @@ static NSString *uploadFailedList = @"uploadFailedListView";
 	NSArray *views = @[
 		productListView,
 		purchasedRecordsView,
-		uploadFailedList
+		importFailedView
 	];
 
 	int viewIdx = [views indexOfObject:routeName];
@@ -106,6 +107,8 @@ static NSString *uploadFailedList = @"uploadFailedListView";
 
 	       break;
 			case 2:
+				 v = [[ImportFailedContainerViewController alloc] init];
+
 				 break;
 	    default:
 				 v = [[ProductListViewContainerViewController alloc] init];

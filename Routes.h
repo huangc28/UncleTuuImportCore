@@ -9,7 +9,7 @@
 + (instancetype) sharedInstance;
 + (NSString*) productListView;
 + (NSString*) purchasedRecordsView;
-+ (NSString*) uploadFailedList;
++ (NSString*) importFailedView;
 - (id)GetRouteUIViewController:(NSString *)routeName;
 
 @property(strong, nonatomic) NSMutableDictionary<NSString*, UIViewController*> *routes; // @synthesize routes=_routes
