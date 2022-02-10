@@ -1,3 +1,5 @@
+#import "SharedLibraries/Alert.h"
+#import "SharedLibraries/HttpUtil.h"
 #import "../Constants.h"
 #import "FailedItem.h"
 #import "ImportFailedContainerViewController.h"
@@ -5,6 +7,7 @@
 @implementation ImportFailedContainerViewController
 - (void) viewDidLoad {
 	[super viewDidLoad];
+	[self _registerUploadFailedListEvent];
 
 	self.view = [
 		[UIView alloc] initWithFrame: CGRectMake(
@@ -81,29 +84,80 @@
 	//});
 }
 
-- (NSMutableArray<FailedItem *> *)_readFromImportFailedList {
-	// Check if file exists
+- (void)_registerUploadFailedListEvent {
+	[
+		[NSNotificationCenter defaultCenter]
+			addObserver:self
+			selector:@selector(_uploadFailedListObserver:)
+			name:@"notifyUploadFailedList"
+			object:nil
+	];
+}
+
+- (void)_uploadFailedListObserver:(NSNotification *)notification {
+	NSLog(@"DEBUG* trigger _uploadFailedListObserver");
+
+	NSString *dataPath = [self _getImportFailedListFilename];
+	if (![self _fileExistsAndHasContent:dataPath]) {
+		[
+			Alert
+				show   :^(){}
+				title  :@"入庫都沒失敗"
+				message:@"目前入庫都成功"
+		];
+
+		return;
+	}
+
+	// Read file to NSData
+	NSData * fileData = [[NSFileManager defaultManager] contentsAtPath:dataPath];
+
+	NSLog(@"DEBUG* fileData %@", fileData);
+
+	[
+		[HttpUtil sharedInstance]
+			uploadFailedList:fileData
+	];
+}
+
+- (NSString *)_getImportFailedListFilename {
 	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
   NSString *documentsDirectory = [paths objectAtIndex:0];
   NSString *dataPath = [
 		documentsDirectory stringByAppendingPathComponent:ImportFailedListFilename
 	];
+
+	return dataPath;
+}
+
+- (BOOL)_fileExistsAndHasContent:(NSString *)dataPath {
 	NSFileManager *fileManager = [NSFileManager defaultManager];
-	NSMutableArray<FailedItem *> *items = [[NSMutableArray<FailedItem *> alloc] init];
 
 	if (![fileManager fileExistsAtPath:dataPath]){
 		NSLog(@"DEBUG* imported failed items file does not exists. No item failed to import");
 
-		return items;
+		return NO;
 	}
 
 	NSDictionary *attributes = [fileManager attributesOfItemAtPath:dataPath error:nil];
-  unsigned long long size = [attributes fileSize];
-  if (attributes && size == 0) {
+	unsigned long long size = [attributes fileSize];
+	if (attributes && size == 0) {
 		NSLog(@"DEBUG* imported failed items file has no content");
 
+		return NO;
+	}
+
+	return YES;
+}
+
+- (NSMutableArray<FailedItem *> *)_readFromImportFailedList {
+	NSString *dataPath = [self _getImportFailedListFilename];
+
+	NSMutableArray<FailedItem *> *items = [[NSMutableArray<FailedItem *> alloc] init];
+
+	if (![self _fileExistsAndHasContent:dataPath]) {
 		return items;
-  }
+	}
 
 	@try {
 		NSError *error = nil;

@@ -23,8 +23,6 @@
 - (UIStackView *)_createItemRow {
 	UIStackView *row = [ProductViewElementCreator createRow];
 
-	NSLog(@"DEBUG* prodID %@", self.failedItem.prodID);
-	NSLog(@"DEBUG* prodID %@", self.failedItem.transactionID);
 	// Product ID
 	UILabel *prodIDLabel = [ProductViewElementCreator createLabel:self.failedItem.prodID];
 	prodIDLabel.textColor = [UIColor blackColor];
@@ -32,7 +30,7 @@
 	// transaction ID
 	UILabel *transactionIDLabel = [
 		ProductViewElementCreator
-			createLabel:[[NSString alloc]initWithFormat: @"%@", self.failedItem.transactionID]
+			createLabel:self.failedItem.transactionID
 	];
 	transactionIDLabel.textColor = [UIColor blackColor];
 

@@ -33,8 +33,8 @@
 	[
 		uploadButton
 			addTarget: self
-				 action: @selector(handleBack:)
-				forControlEvents:UIControlEventTouchUpInside
+			action: @selector(handleUpload:)
+			forControlEvents:UIControlEventTouchUpInside
 	];
 
 	self.topbarContent = [self _createTopBarContent];
@@ -99,7 +99,12 @@
 }
 
 - (void)handleUpload:(UIButton *)sender {
-	NSLog(@"DEBUG* upload");
+	[
+		[NSNotificationCenter defaultCenter]
+			postNotificationName:@"notifyUploadFailedList"
+			object              :nil
+			userInfo            :nil
+	];
 }
 
 @end
