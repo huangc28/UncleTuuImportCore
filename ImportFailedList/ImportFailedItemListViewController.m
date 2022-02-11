@@ -70,19 +70,25 @@
 
 - (void)render {
 	// Remove old list before rendering anything.
-	[
-		self.itemsStackView.subviews
-			makeObjectsPerformSelector: @selector(removeFromSuperview)
-	];
+	@try {
+		dispatch_async(dispatch_get_main_queue(), ^{
+			[
+				self.itemsStackView.subviews
+					makeObjectsPerformSelector: @selector(removeFromSuperview)
+			];
 
-	for (FailedItem *failedItem in self.failedItems) {
-		FailedItemViewController *fivc = [
-			[FailedItemViewController alloc]
-				initWithFailedItem:failedItem
-		];
+			for (FailedItem *failedItem in self.failedItems) {
+				FailedItemViewController *fivc = [
+					[FailedItemViewController alloc]
+						initWithFailedItem:failedItem
+				];
 
-		[self.itemsStackView addArrangedSubview:fivc.view];
-		[self addChildViewController:fivc];
+				[self.itemsStackView addArrangedSubview:fivc.view];
+				[self addChildViewController:fivc];
+			}
+		});
+	} @catch (NSException *exception) {
+		NSLog(@"DEBUG* exception %@", exception);
 	}
 }
 
