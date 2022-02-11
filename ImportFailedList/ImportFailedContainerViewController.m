@@ -1,13 +1,17 @@
 #import "SharedLibraries/Alert.h"
 #import "SharedLibraries/HttpUtil.h"
+
 #import "../Constants.h"
+#import "../Util.h"
 #import "FailedItem.h"
 #import "ImportFailedContainerViewController.h"
 
 @implementation ImportFailedContainerViewController
 - (void) viewDidLoad {
 	[super viewDidLoad];
+
 	[self _registerUploadFailedListEvent];
+	[self _registerUploadFiledItemEvent];
 
 	self.view = [
 		[UIView alloc] initWithFrame: CGRectMake(
@@ -94,9 +98,17 @@
 	];
 }
 
-- (void)_uploadFailedListObserver:(NSNotification *)notification {
-	NSLog(@"DEBUG* trigger _uploadFailedListObserver");
+- (void)_registerUploadFiledItemEvent {
+	[
+		[NSNotificationCenter defaultCenter]
+			addObserver:self
+			selector:@selector(_uploadFailedItemObserver:)
+			name:@"notifyUploadFailedItem"
+			object:nil
+	];
+}
 
+- (void)_uploadFailedListObserver:(NSNotification *)notification {
 	NSString *dataPath = [self _getImportFailedListFilename];
 	if (![self _fileExistsAndHasContent:dataPath]) {
 		[
@@ -112,12 +124,43 @@
 	// Read file to NSData
 	NSData * fileData = [[NSFileManager defaultManager] contentsAtPath:dataPath];
 
-	NSLog(@"DEBUG* fileData %@", fileData);
-
+	// TODO add dialog to notify user that the upload is completed.
+	// TODO remove file from dataPath.
 	[
 		[HttpUtil sharedInstance]
 			uploadFailedList:fileData
 	];
+}
+
+- (void)_uploadFailedItemObserver:(NSNotification *)notification {
+	if ([[notification name] isEqualToString:@"notifyUploadFailedItem"]) {
+		NSDictionary *userInfo = notification.userInfo;
+		__block FailedItem *failedItem = [userInfo objectForKey:@"failedItem"];
+
+		NSString *dataPath = [self _getImportFailedListFilename];
+		NSLog(@"DEBUG* _uploadFailedItemObserver failedItem %@", failedItem);
+		NSLog(@"DEBUG* _uploadFailedItemObserver dataPath %@", dataPath);
+		// Convert transactionTime string to NSDate
+
+		// Upload item to remote server
+		HttpUtil *httpUtil = [HttpUtil sharedInstance];
+		[
+			httpUtil
+				addItemToInventory:failedItem.prodID
+				transactionID     :failedItem.transactionID
+				receipt           :failedItem.receipt
+				tempReceipt       :failedItem.tempReceipt
+				transactionTime   :[Util convertISO8601ToNSDate:failedItem.transactionDate]
+				completedHandler  :^(NSData *data, NSURLResponse *response, NSError *error) {
+					NSLog(@"DEBUG* done uploading");
+					// Remove uploaded item from the item list
+
+					// Rerender the list
+				}
+		];
+
+
+	}
 }
 
 - (NSString *)_getImportFailedListFilename {

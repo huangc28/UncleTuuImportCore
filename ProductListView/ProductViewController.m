@@ -44,8 +44,8 @@
 		[
 			[NSNotificationCenter defaultCenter]
 				postNotificationName:@"notifyInappPayment"
-											object:nil
-										userInfo:nProdID
+				object:nil
+				userInfo:nProdID
 		];
 	});
 }

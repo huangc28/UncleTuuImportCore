@@ -69,14 +69,11 @@
 }
 
 - (void)render {
-	NSLog(@"DEBUG* trigger render !!!");
 	// Remove old list before rendering anything.
 	[
 		self.itemsStackView.subviews
 			makeObjectsPerformSelector: @selector(removeFromSuperview)
 	];
-
-	NSLog(@"DEBUG* render faileditems %lu", (unsigned long)[self.failedItems count]);
 
 	for (FailedItem *failedItem in self.failedItems) {
 		FailedItemViewController *fivc = [
