@@ -29,7 +29,7 @@
 	];
 
 	// Create upload button
-	UIButton *uploadButton =[self createButton:@"上傳"];
+	UIButton *uploadButton =[self createButton:@"全部上傳"];
 	[
 		uploadButton
 			addTarget: self

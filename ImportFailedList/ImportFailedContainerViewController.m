@@ -119,7 +119,7 @@
 }
 
 - (void)_uploadFailedListObserver:(NSNotification *)notification {
-	NSString *dataPath = [self _getImportFailedListFilename];
+	__block NSString *dataPath = [self _getImportFailedListFilename];
 	if (![self _fileExistsAndHasContent:dataPath]) {
 		[
 			Alert
@@ -139,6 +139,15 @@
 	[
 		[HttpUtil sharedInstance]
 			uploadFailedList:fileData
+			completedHandler: ^(NSData *data, NSURLResponse *response, NSError *error) {
+				// Clear file content
+				[[NSFileManager defaultManager] createFileAtPath:dataPath contents:[NSData data] attributes:nil];
+
+				// Reset failed item list
+				self.itemListVC.failedItems = [[NSMutableArray<FailedItem *> alloc] init];
+				// Rerender item list
+				[self.itemListVC render];
+			}
 	];
 }
 
@@ -146,11 +155,7 @@
 	if ([[notification name] isEqualToString:@"notifyUploadFailedItem"]) {
 		NSDictionary *userInfo = notification.userInfo;
 		__block FailedItem *failedItem = [userInfo objectForKey:@"failedItem"];
-
-		NSString *dataPath = [self _getImportFailedListFilename];
-		NSLog(@"DEBUG* _uploadFailedItemObserver failedItem %@", failedItem);
-		NSLog(@"DEBUG* _uploadFailedItemObserver dataPath %@", dataPath);
-		 ImportFailedContainerViewController * __weak weakSelf = self;
+		ImportFailedContainerViewController * __weak weakSelf = self;
 
 		// Upload item to remote server
 		HttpUtil *httpUtil = [HttpUtil sharedInstance];
