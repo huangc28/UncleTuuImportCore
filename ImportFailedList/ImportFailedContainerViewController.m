@@ -40,7 +40,6 @@
 
 	// render itemListVC renders failedItems
 	[self.itemListVC render];
-	//NSLog(@"DEBUG* failed item %@", items);
 
 	//dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
 	//	// We will check if cache file of import failed items exists.
@@ -140,13 +139,41 @@
 		[HttpUtil sharedInstance]
 			uploadFailedList:fileData
 			completedHandler: ^(NSData *data, NSURLResponse *response, NSError *error) {
-				// Clear file content
-				[[NSFileManager defaultManager] createFileAtPath:dataPath contents:[NSData data] attributes:nil];
 
-				// Reset failed item list
-				self.itemListVC.failedItems = [[NSMutableArray<FailedItem *> alloc] init];
-				// Rerender item list
-				[self.itemListVC render];
+				NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+
+				NSError *parseError = nil;
+				NSDictionary *responseDictionary = [
+					NSJSONSerialization
+						JSONObjectWithData:data
+						options:0
+						error:&parseError
+				];
+
+				if (httpResponse.statusCode == 200) {
+					// Clear file content
+					[[NSFileManager defaultManager] createFileAtPath:dataPath contents:[NSData data] attributes:nil];
+
+					// Reset failed item list
+					self.itemListVC.failedItems = [[NSMutableArray<FailedItem *> alloc] init];
+					// Rerender item list
+					[self.itemListVC render];
+
+					// Display success alert.
+					[
+						Alert
+							show:^(){}
+							title: @"上傳成功"
+							message: @"商品上傳成功"
+					];
+				} else {
+					[
+						Alert
+							show:^(){}
+							title: @"上傳失敗"
+							message: responseDictionary[@"err"]
+					];
+				}
 			}
 	];
 }
@@ -168,14 +195,42 @@
 				transactionTime   :[Util convertISO8601ToNSDate:failedItem.transactionDate]
 				completedHandler  :^(NSData *data, NSURLResponse *response, NSError *error) {
 					NSLog(@"DEBUG* done uploading");
-					// Remove uploaded item from the item list
-					[weakSelf _removeFailedItemFromListByTransactionID:failedItem.transactionID];
 
-					// Refresh import_failed_items list again.
-					[weakSelf _refreshFailedItems];
+					NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
 
-					// Rerender the list
-					[weakSelf.itemListVC render];
+					NSError *parseError = nil;
+					NSDictionary *responseDictionary = [
+						NSJSONSerialization
+							JSONObjectWithData:data
+							options:0
+							error:&parseError
+					];
+
+					if (httpResponse.statusCode == 200) {
+						// Remove uploaded item from the item list
+						[weakSelf _removeFailedItemFromListByTransactionID:failedItem.transactionID];
+
+						// Refresh import_failed_items list again.
+						[weakSelf _refreshFailedItems];
+
+						// Rerender the list
+						[weakSelf.itemListVC render];
+
+						// Display success alert.
+						[
+							Alert
+								show:^(){}
+								title: @"上傳成功"
+								message: @"商品上傳成功"
+						];
+					} else {
+						[
+							Alert
+								show:^(){}
+								title: @"上傳失敗"
+								message: responseDictionary[@"err"]
+						];
+					}
 				}
 		];
 	}
