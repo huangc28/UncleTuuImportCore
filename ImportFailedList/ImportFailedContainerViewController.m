@@ -40,51 +40,6 @@
 
 	// render itemListVC renders failedItems
 	[self.itemListVC render];
-
-	//dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-	//	// We will check if cache file of import failed items exists.
-	//	// Store a fake receipt in import_failed_items.txt first.
-	//	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-  //	NSString *documentsDirectory = [paths objectAtIndex:0];
-  //	NSString *dataPath = [documentsDirectory stringByAppendingPathComponent:@"import_failed_items.txt"];
-
-	//	NSLog(@"DEBUG* dataPath %@", dataPath);
-	//	NSDictionary *cacheDic = @{
-	//		@"prod_id":@"exampleid",
-	//		@"receipt":@"somereceipt",
-	//		@"temp_receipt":@"sometempreceipt",
-	//		@"transaction_id":@"sometransid",
-	//		@"transaction_date":@"sometransdate"
-	//	};
-
-	//	NSError *error;
-	//	NSMutableData *jsonData = [[
-	//		NSJSONSerialization
-	//			dataWithJSONObject:cacheDic
-  //      options:NSJSONWritingPrettyPrinted
-  //      error:&error
-	//	] copy];
-
-	//	NSFileHandle *fileHandle = [NSFileHandle fileHandleForWritingAtPath:dataPath];
-
-	//	if (fileHandle == nil) {
-  //    [
-	//			[NSFileManager defaultManager]
-	//				createFileAtPath:dataPath
-	//				contents:nil
-	//				attributes:nil
-	//		];
-
-  //    fileHandle = [NSFileHandle fileHandleForWritingAtPath:dataPath];
-	//	}
-
-	//	[fileHandle seekToEndOfFile];
-	//	[fileHandle writeData:jsonData];
-	//	[fileHandle writeData:[@"\n\n" dataUsingEncoding:NSUTF8StringEncoding]];
-	//	[fileHandle closeFile];
-
-	//	NSLog(@"DEBUG* closeFile~~");
-	//});
 }
 
 - (void)viewDidAppear:(BOOL)animated {

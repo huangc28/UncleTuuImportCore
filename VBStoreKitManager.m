@@ -1,9 +1,11 @@
 #import "Storekit/Storekit.h"
 
-#import "VBStoreKitManager.h"
-
 #import "SharedLibraries/HttpUtil.h"
 #import "SharedLibraries/Alert.h"
+
+#import "ImportFailedList/FailedItem.h"
+#import "VBStoreKitManager.h"
+#import "Util.h"
 
 @interface SKPaymentQueue()
 @property (nonatomic, copy) NSArray* transactions;
@@ -49,7 +51,7 @@
 					HttpUtil *httpUtil = [HttpUtil sharedInstance];
 					[
 						httpUtil
-							addItemToInventory:productID
+							addItemToInventory  :productID
 								transactionID   :transaction.transactionIdentifier
 								receipt         :encodedReceipt
 								tempReceipt     :encodedTempReceipt
@@ -115,12 +117,22 @@
 											NSLog(@"DEBUG* exception after import request %@", exception);
 										}
 									} else {
+										// Write failed item data into local file.
+										FailedItem *item = [
+											[FailedItem alloc]
+												initWithProdID :productID
+												receipt        :encodedReceipt
+												tempReceipt    :encodedTempReceipt
+												transactionID  :transaction.transactionIdentifier
+												transactionDate:[Util convertNSDateToISO8601:transaction.transactionDate]
+										];
+
+										[item writeDataToFailedItemLog];
+
 										[
 											Alert
-												show:^(){
-													NSLog(@"DEBUG* item import failed");
-												}
-												title: @"Error"
+												show:^(){}
+												title: @"入庫失敗, 已寫入失敗帖表"
 												message: responseDictionary[@"err"]
 										];
 									}

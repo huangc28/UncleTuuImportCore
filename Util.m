@@ -1,4 +1,5 @@
 #import "Util.h"
+#import "Constants.h"
 
 @implementation Util : NSObject
 + (NSDate *)convertISO8601ToNSDate:(NSString *)dateTimeStr {
@@ -11,6 +12,28 @@
 	NSDate *transactionTimeDate = [formatter dateFromString:transactionTime];
 
 	return transactionTimeDate;
+}
+
++ (NSString *)convertNSDateToISO8601:(NSDate *)nsdate {
+	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+	NSLocale *enUSPOSIXLocale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+	[dateFormatter setLocale:enUSPOSIXLocale];
+	[dateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ssZZZZZ"];
+	[dateFormatter setCalendar:[NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian]];
+
+	return [dateFormatter stringFromDate:nsdate];
+}
+
+
+// TODO cache retrieved dataPath instead of performing the login everytime.
++ (NSString *)getImportFailedListFilename {
+	NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+	NSString *documentsDirectory = [paths objectAtIndex:0];
+  	NSString *dataPath = [
+		documentsDirectory stringByAppendingPathComponent:ImportFailedListFilename
+	];
+
+	return dataPath;
 }
 @end
 

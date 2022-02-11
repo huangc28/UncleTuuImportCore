@@ -8,6 +8,8 @@
 	transactionID:(NSString *)transactionID
 	transactionDate:(NSString *)transactionDate;
 
+- (void)writeDataToFailedItemLog;
+
 @property(strong, nonatomic) NSString* prodID;
 @property(strong, nonatomic) NSString* receipt;
 @property(strong, nonatomic) NSString* tempReceipt;
