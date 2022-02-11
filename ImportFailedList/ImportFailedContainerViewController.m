@@ -88,6 +88,16 @@
 	//});
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+	[super viewDidAppear:animated];
+
+	// Load list of import failed item from local file system.
+	self.itemListVC.failedItems = [self _readFromImportFailedList];
+
+	// render itemListVC renders failedItems
+	[self.itemListVC render];
+}
+
 - (void)_registerUploadFailedListEvent {
 	[
 		[NSNotificationCenter defaultCenter]
@@ -267,6 +277,7 @@
 	return YES;
 }
 
+// TODO toggle loading spinner
 - (NSMutableArray<FailedItem *> *)_readFromImportFailedList {
 	NSString *dataPath = [self _getImportFailedListFilename];
 
