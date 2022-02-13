@@ -48,6 +48,16 @@
 
 					NSString *productID = transaction.payment.productIdentifier;
 
+					// Let's prepare failed item in case http failed. Write failed item to local filesystem if http request failed.
+					__block FailedItem *item = [
+						[FailedItem alloc]
+							initWithProdID :productID
+							receipt        :encodedReceipt
+							tempReceipt    :encodedTempReceipt
+							transactionID  :transaction.transactionIdentifier
+							transactionDate:[Util convertNSDateToISO8601:transaction.transactionDate]
+					];
+
 					HttpUtil *httpUtil = [HttpUtil sharedInstance];
 					[
 						httpUtil
@@ -58,6 +68,8 @@
 								transactionTime :transaction.transactionDate
 								completedHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
 									if (error) {
+										[item writeDataToFailedItemLog];
+
 										[
 											Alert show:^(){
 												NSLog(@"failed to add game item to inventory %@", [error localizedDescription]);
@@ -79,6 +91,8 @@
 									];
 
 									if (parseError) {
+										[item writeDataToFailedItemLog];
+
 										[
 											Alert show:^(){
 												NSLog(@"failed to add game item to inventory %@", [
@@ -118,15 +132,6 @@
 										}
 									} else {
 										// Write failed item data into local file.
-										FailedItem *item = [
-											[FailedItem alloc]
-												initWithProdID :productID
-												receipt        :encodedReceipt
-												tempReceipt    :encodedTempReceipt
-												transactionID  :transaction.transactionIdentifier
-												transactionDate:[Util convertNSDateToISO8601:transaction.transactionDate]
-										];
-
 										[item writeDataToFailedItemLog];
 
 										[
