@@ -216,10 +216,9 @@
 - (void)setupLayout {
 	@try {
 		[self.scrollView.topAnchor constraintEqualToAnchor:self.view.layoutMarginsGuide.topAnchor constant:20.0].active = YES;
-  	[self.scrollView.leadingAnchor constraintEqualToAnchor:self.view.layoutMarginsGuide.leadingAnchor].active = YES;
-		[self.scrollView.bottomAnchor constraintEqualToAnchor:self.view.layoutMarginsGuide.bottomAnchor].active = YES;
-  	[self.scrollView.trailingAnchor constraintEqualToAnchor:self.view.layoutMarginsGuide.trailingAnchor].active = YES;
-
+  		[self.scrollView.leadingAnchor constraintEqualToAnchor:self.view.layoutMarginsGuide.leadingAnchor].active = YES;
+		[self.scrollView.bottomAnchor constraintEqualToAnchor:self.view.layoutMarginsGuide.bottomAnchor constant:-85.0].active = YES;
+		[self.scrollView.trailingAnchor constraintEqualToAnchor:self.view.layoutMarginsGuide.trailingAnchor].active = YES;
 
 		// Content view layout.
 		[self.contentView.topAnchor constraintEqualToAnchor:self.scrollView.topAnchor].active = YES;
@@ -227,7 +226,6 @@
 		[self.contentView.trailingAnchor constraintEqualToAnchor:self.scrollView.trailingAnchor].active = YES;
 		[self.contentView.bottomAnchor constraintEqualToAnchor:self.scrollView.bottomAnchor constant: -40].active = YES;
 		[self.contentView.widthAnchor constraintEqualToAnchor:self.scrollView.widthAnchor].active = YES;
-
 
 		// Products stack view layout.
 		[self.prodsStackView.topAnchor constraintEqualToAnchor:self.contentView.topAnchor].active = YES;
