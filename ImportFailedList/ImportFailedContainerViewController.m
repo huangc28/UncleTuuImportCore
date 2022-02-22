@@ -74,6 +74,8 @@
 
 - (void)_uploadFailedListObserver:(NSNotification *)notification {
 	__block NSString *dataPath = [self _getImportFailedListFilename];
+	NSLog(@"DEBUG* dataPath %@", dataPath);
+
 	if (![self _fileExistsAndHasContent:dataPath]) {
 		[
 			Alert
@@ -88,8 +90,6 @@
 	// Read file to NSData
 	NSData * fileData = [[NSFileManager defaultManager] contentsAtPath:dataPath];
 
-	// TODO add dialog to notify user that the upload is completed.
-	// TODO remove file from dataPath.
 	[
 		[HttpUtil sharedInstance]
 			uploadFailedList:fileData
@@ -121,6 +121,24 @@
 							title: @"上傳成功"
 							message: @"商品上傳成功"
 					];
+
+					// Remove "import_failed_items.txt" from filesystem if upload succeed
+					NSError *removeDataPathError = nil;
+
+					[
+						[NSFileManager defaultManager]
+							removeItemAtPath:dataPath
+							error           :&removeDataPathError
+					];
+
+					if (removeDataPathError) {
+						[
+							Alert
+								show:^(){}
+								title  :@"移除失敗列表失敗"
+								message:@"請聯絡開發者"
+						];
+					}
 				} else {
 					[
 						Alert

@@ -53,6 +53,10 @@
 - (UIStackView *)_createItemRow {
 	UIStackView *row = [ProductViewElementCreator createRow];
 
+	// transaction date
+	UILabel *transactionDate = [ProductViewElementCreator createLabel:self.failedItem.transactionDate];
+	transactionDate.textColor = [UIColor blackColor];
+
 	// Product ID
 	UILabel *prodIDLabel = [ProductViewElementCreator createLabel:self.failedItem.prodID];
 	prodIDLabel.textColor = [UIColor blackColor];
@@ -64,13 +68,10 @@
 	];
 	transactionIDLabel.textColor = [UIColor blackColor];
 
-	// transaction date
-	UILabel *transactionDate = [ProductViewElementCreator createLabel:self.failedItem.transactionDate];
-	transactionDate.textColor = [UIColor blackColor];
 
-	[row addArrangedSubview:prodIDLabel];
-	[row addArrangedSubview:transactionIDLabel];
 	[row addArrangedSubview:transactionDate];
+	[row addArrangedSubview:transactionIDLabel];
+	[row addArrangedSubview:prodIDLabel];
 
 	return row;
 }

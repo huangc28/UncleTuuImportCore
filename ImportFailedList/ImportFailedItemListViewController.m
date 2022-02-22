@@ -1,8 +1,10 @@
+#import "SharedLibraries/ProductViewElementCreator.h"
 #import "ImportFailedItemListViewController.h"
 #import "FailedItemViewController.h"
 
-@implementation ImportFailedItemListViewController
+static UIStackView *headerRow = nil;
 
+@implementation ImportFailedItemListViewController
 - (void)viewDidLoad {
     [super viewDidLoad];
 
@@ -68,6 +70,29 @@
 		[self.itemsStackView.bottomAnchor constraintEqualToAnchor:self.contentView.bottomAnchor].active = YES;
 }
 
++ (UIStackView *)getHeaderRow {
+	if (!headerRow) {
+		UIStackView *row = [ProductViewElementCreator createRow];
+
+		UILabel *dateLabel = [ProductViewElementCreator createLabel:@"日期"];
+		dateLabel.textColor = [UIColor blackColor];
+
+		UILabel *transactionIDLabel = [ProductViewElementCreator createLabel:@"憑證單號"];
+		transactionIDLabel.textColor = [UIColor blackColor];
+
+		UILabel *prodIDLabel = [ProductViewElementCreator createLabel:@"商品ID"];
+		prodIDLabel.textColor = [UIColor blackColor];
+
+		[row addArrangedSubview:dateLabel];
+		[row addArrangedSubview:transactionIDLabel];
+		[row addArrangedSubview:prodIDLabel];
+
+		headerRow = row;
+	}
+
+	return headerRow;
+}
+
 - (void)render {
 	// Remove old list before rendering anything.
 	@try {
@@ -76,6 +101,10 @@
 				self.itemsStackView.subviews
 					makeObjectsPerformSelector: @selector(removeFromSuperview)
 			];
+
+			// Render header view.
+			UIStackView *headerRow = [ImportFailedItemListViewController getHeaderRow];
+			[self.itemsStackView addArrangedSubview:headerRow];
 
 			for (FailedItem *failedItem in self.failedItems) {
 				FailedItemViewController *fivc = [
