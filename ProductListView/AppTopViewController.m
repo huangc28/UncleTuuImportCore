@@ -90,11 +90,19 @@
 	];
 
 
+	[utf setTextColor:[UIColor blackColor]];
 	utf.backgroundColor = [UIColor whiteColor];
-	utf.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"用戶名"];
+
+	utf.attributedPlaceholder = [
+		[NSAttributedString alloc]
+			initWithString:@"用戶名"
+			attributes:@{
+				NSForegroundColorAttributeName:[UIColor lightGrayColor]
+			}
+	];
 	[
 		utf
-			addTarget            :self
+			addTarget          :self
 				 action          :@selector(usernameDidChange:)
 				 forControlEvents:UIControlEventAllEditingEvents
 	];
@@ -122,8 +130,18 @@
 			setContentHuggingPriority:250
 			forAxis                  :UILayoutConstraintAxisHorizontal
 	];
+
+	[ptf setTextColor:[UIColor blackColor]];
 	ptf.backgroundColor = [UIColor whiteColor];
-	ptf.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"密碼"];
+
+	ptf.attributedPlaceholder = [
+		[NSAttributedString alloc]
+			initWithString:@"密碼"
+			attributes:@{
+				NSForegroundColorAttributeName:[UIColor lightGrayColor]
+			}
+	];
+
 	[
 		ptf
 			addTarget: self
