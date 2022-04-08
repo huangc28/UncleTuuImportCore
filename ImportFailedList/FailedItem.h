@@ -8,7 +8,7 @@
 	transactionID:(NSString *)transactionID
 	transactionDate:(NSString *)transactionDate;
 
-- (void)writeDataToFailedItemLog;
+- (void)writeDataToFailedItemLog:(void(^)(NSError *error))completionHandler;
 
 @property(strong, nonatomic) NSString* prodID;
 @property(strong, nonatomic) NSString* receipt;

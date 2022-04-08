@@ -11,13 +11,6 @@
 @property (nonatomic, copy) NSArray* transactions;
 @end
 
-@interface SKPaymentQueue()
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-implementations"
-@property (nonatomic,readonly) NSData * transactionReceipt;
-#pragma clang diagnostic pop
-@end
-
 @implementation VBStoreKitManager
 
 - (void)_handlePurchased:(NSArray *)transactions {
@@ -27,17 +20,21 @@
 		NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
 		NSData *receipt = [NSData dataWithContentsOfURL:receiptURL];
 		if (!receipt) {
-		    NSLog(@"DEBUG* VBStoreKitManager no receipt");
+			NSLog(@"DEBUG* VBStoreKitManager no receipt");
 		    /* No local receipt -- handle the error. */
 		} else {
-			NSData *tempReceipt = transaction.transactionReceipt;
-		  NSString *encodedTempReceipt = [tempReceipt base64EncodedStringWithOptions:0];
+			#pragma clang diagnostic push
+			#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+				NSData *tempReceipt = transaction.transactionReceipt;
+			#pragma clang diagnostic pop
+
+			// NSData *tempReceipt = transaction.transactionReceipt;
+			NSString *encodedTempReceipt = [tempReceipt base64EncodedStringWithOptions:0];
 			NSLog(@"DEBUG* encodedTempReceipt %@", encodedTempReceipt);
 
 		  /* Get the receipt in encoded format */
-		  NSString *encodedReceipt = [receipt base64EncodedStringWithOptions:0];
-
-			NSLog(@"DEBUG* %@", encodedReceipt);
+			NSString *encodedReceipt = [receipt base64EncodedStringWithOptions:0];
+			NSLog(@"DEBUG* encodedReceipt %@", encodedReceipt);
 
 			NSString *productID = transaction.payment.productIdentifier;
 
@@ -61,14 +58,27 @@
 						transactionTime :transaction.transactionDate
 						completedHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
 							if (error) {
-								[item writeDataToFailedItemLog];
-
 								[
 									Alert show:^(){
 										NSLog(@"failed to add game item to inventory %@", [error localizedDescription]);
 									}
 									title: @"Error"
 									message: [error localizedDescription]
+								];
+
+								[
+									item writeDataToFailedItemLog: ^(NSError * writeError){
+										if (writeError) {
+											[
+												Alert
+													show:^(){}
+													title: @"寫入入庫失敗列表錯誤"
+													message: [writeError localizedDescription]
+											];
+
+											return;
+										}
+									}
 								];
 
 								return;
@@ -84,7 +94,6 @@
 							];
 
 							if (parseError) {
-								[item writeDataToFailedItemLog];
 
 								[
 									Alert show:^(){
@@ -94,6 +103,21 @@
 									}
 									title: @"Error"
 									message: [parseError localizedDescription]
+								];
+
+								[
+									item writeDataToFailedItemLog: ^(NSError * writeError){
+										if (writeError) {
+											[
+												Alert
+													show:^(){}
+													title: @"寫入入庫失敗列表錯誤"
+													message: [writeError localizedDescription]
+											];
+
+											return;
+										}
+									}
 								];
 
 								return;
@@ -124,14 +148,27 @@
 									NSLog(@"DEBUG* exception after import request %@", exception);
 								}
 							} else {
-								// Write failed item data into local file.
-								[item writeDataToFailedItemLog];
-
 								[
 									Alert
 										show:^(){}
 										title: @"入庫失敗, 已寫入失敗列表"
 										message: responseDictionary[@"err"]
+								];
+
+								// Write failed item data into local file.
+								[
+									item writeDataToFailedItemLog: ^(NSError * writeError){
+										if (writeError) {
+											[
+												Alert
+													show:^(){}
+													title: @"寫入入庫失敗列表錯誤"
+													message: [writeError localizedDescription]
+											];
+
+											return;
+										}
+									}
 								];
 							}
 						}

@@ -63,9 +63,9 @@
 	[self registerInappPaymentEvent];
 
 	// Assign a payment observer so we can store item transaction info.
-	self.vbStoreKitManager = [[VBStoreKitManager alloc] init];
+	//self.vbStoreKitManager = [[VBStoreKitManager alloc] init];
 
-	[[SKPaymentQueue defaultQueue] addTransactionObserver:self.vbStoreKitManager];
+	//[[SKPaymentQueue defaultQueue] addTransactionObserver:self.vbStoreKitManager];
 }
 
 // Register event to perform in app purchase in importer app

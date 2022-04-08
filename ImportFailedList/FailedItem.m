@@ -21,7 +21,8 @@
 		return self;
 }
 
-- (void)writeDataToFailedItemLog {
+// TODO handle error so the app won't crash.
+- (void)writeDataToFailedItemLog:(void(^)(NSError *error))completionHandler {
 	FailedItem * __weak weakSelf = self;
 
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
@@ -42,6 +43,12 @@
 				options:NSJSONWritingPrettyPrinted
       			error:&error
 		] copy];
+
+		if (error) {
+			completionHandler(error);
+
+			return;
+		}
 
 		NSFileHandle *fileHandle = [NSFileHandle fileHandleForWritingAtPath:dataPath];
 

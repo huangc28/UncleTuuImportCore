@@ -14,12 +14,9 @@
 
 - (id) init {
 	self = [super init];
-
 	self.routes = [Routes sharedInstance];
-
 	return self;
 }
-
 
 - (void) viewDidLoad {
 	[super viewDidLoad];
@@ -34,6 +31,8 @@
 		)
 	];
 
+	[self _initVBStoreKitManagerObserver];
+
 	appView.userInteractionEnabled = YES;
 	appView.backgroundColor = [UIColor whiteColor];
 
@@ -42,6 +41,24 @@
 
 	// Retrieve UIViewController from routes.
 	[self changeRoute:Routes.productListView];
+}
+
+- (void)_initVBStoreKitManagerObserver {
+	// Remove all default observers
+	SKPaymentQueue *queue = [SKPaymentQueue defaultQueue];
+
+	NSLog(@"DEBUG* observer count 1 %lu", (unsigned long)[queue.transactionObservers count]);
+
+	for (id observer in queue.transactionObservers) {
+		NSLog(@"DEBUG* observer %@", observer);
+		[queue removeTransactionObserver:observer];
+	}
+
+	NSLog(@"DEBUG* observer count 2 %lu", (unsigned long)[queue.transactionObservers count]);
+
+	self.vbStoreKitManager = [[VBStoreKitManager alloc] init];
+
+	[queue addTransactionObserver:self.vbStoreKitManager];
 }
 
 - (void) renderImportApp:(UIApplication *)app {
