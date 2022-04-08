@@ -23,17 +23,15 @@
 
 // TODO handle error so the app won't crash.
 - (void)writeDataToFailedItemLog:(void(^)(NSError *error))completionHandler {
-	FailedItem * __weak weakSelf = self;
-
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
 		NSString *dataPath = [Util getImportFailedListFilename];
 
 		NSDictionary *cacheDic = @{
-			@"prod_id"         :weakSelf.prodID,
-			@"receipt"         :weakSelf.receipt,
-			@"temp_receipt"    :weakSelf.tempReceipt,
-			@"transaction_id"  :weakSelf.transactionID,
-			@"transaction_date":weakSelf.transactionDate
+			@"prod_id"         :self.prodID,
+			@"receipt"         :self.receipt,
+			@"temp_receipt"    :self.tempReceipt,
+			@"transaction_id"  :self.transactionID,
+			@"transaction_date":self.transactionDate
 		};
 
 		NSError *error;
@@ -41,8 +39,9 @@
 			NSJSONSerialization
 				dataWithJSONObject:cacheDic
 				options:NSJSONWritingPrettyPrinted
-      			error:&error
+						error:&error
 		] copy];
+
 
 		if (error) {
 			completionHandler(error);
